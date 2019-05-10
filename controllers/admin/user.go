@@ -3,6 +3,7 @@ package admin
 import (
 	"log"
 	"web/packs/gin"
+	"web/packs/util"
 )
 
 type User struct {
@@ -10,15 +11,24 @@ type User struct {
 }
 
 func (this *User) Ulist(c *gin.Context) {
+	var page int
+
+	var count int
+
+	count = 100
+
 	var users []map[string]string
 
 	this.dbInstance().GetAll("select * from user", &users)
 
-	log.Println(users)
+	log.Println(users, page, count, this.pageSize())
 
-	// var records []map[string]string
-	// db.GetAll("select * from game_roles where accname = 'test'", &records)
-	// log.Println(records)
+	pagebar := util.NewPager(page, int(count), this.pageSize(), "/admin/user/list", true).ToString()
+	log.Println(pagebar)
+	/*c.HTML(200, "admin/user/list", map[string]interface{}{
+		"list"			:		users,
+		"pagebar"		:		pagebar,
+	})*/
 }
 
 func (_ *User) Uadd(c *gin.Context) {

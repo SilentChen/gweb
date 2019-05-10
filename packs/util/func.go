@@ -66,14 +66,14 @@ func Str2int642 (str string, defaultNum int64) (int64) {
 	return num
 }
 
-func date2unix(date string) int64 {
+func Date2unix(date string) int64 {
 	timezone, _ := time.LoadLocation("Local")
 	tmp, _ := time.ParseInLocation(Gtime_layout, date, timezone)
 
 	return tmp.Unix()
 }
 
-func unix2date(utime int64) string {
+func Unix2date(utime int64) string {
 	return time.Unix(utime, 0).Format(Gtime_layout)
 }
 
