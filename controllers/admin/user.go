@@ -15,11 +15,9 @@ func (this *User) Ulist(c *gin.Context) {
 
 	count := this.rowsCount("select count(*) as `count` from user", "count")
 
-	offset := this.pageOffset(page)
-
 	var users []map[string]string
 
-	this.mysqlInstance().GetAll(fmt.Sprintf("select * from user limit %d,%d", offset, this.pageSize()), &users)
+	this.mysqlInstance().GetAll(fmt.Sprintf("select * from user limit %d,%d", this.pageOffset(page), this.pageSize()), &users)
 
 	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/user/list", true).ToString()
 
