@@ -41,7 +41,7 @@ func init() {
 	Gwebsetting.webUrl 		= 	"http://127.0.0.1:8080"
 	Gwebsetting.webSubTitle = 	"PersionalBlog"
 	Gwebsetting.webEmail	=	"silent@go.com"
-	Gwebsetting.webPageSize	=	10
+	Gwebsetting.webPageSize	=	2
 	Gwebsetting.webKeyWord	=	"Silent, SilentBlog"
 	Gwebsetting.webDesc		=	"SilentChenPersionalBlog"
 	Gwebsetting.webTheme	=	"default"

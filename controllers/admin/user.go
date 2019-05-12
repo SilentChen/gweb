@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"log"
+	"fmt"
 	"web/packs/gin"
 	"web/packs/util"
 )
@@ -11,24 +11,22 @@ type User struct {
 }
 
 func (this *User) Ulist(c *gin.Context) {
-	var page int
+	page := util.Str2int(c.Query("page"))
 
-	var count int
+	count := this.rowsCount("select count(*) as `count` from user", "count")
 
-	count = 100
+	offset := this.pageOffset(page)
 
 	var users []map[string]string
 
-	this.dbInstance().GetAll("select * from user", &users)
+	this.mysqlInstance().GetAll(fmt.Sprintf("select * from user limit %d,%d", offset, this.pageSize()), &users)
 
-	log.Println(users, page, count, this.pageSize())
+	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/user/list", true).ToString()
 
-	pagebar := util.NewPager(page, int(count), this.pageSize(), "/admin/user/list", true).ToString()
-	log.Println(pagebar)
-	/*c.HTML(200, "admin/user/list", map[string]interface{}{
+	c.HTML(200, "admin/user/list", map[string]interface{}{
 		"list"			:		users,
 		"pagebar"		:		pagebar,
-	})*/
+	})
 }
 
 func (_ *User) Uadd(c *gin.Context) {

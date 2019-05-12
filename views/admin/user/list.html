@@ -26,11 +26,7 @@
 			<td>{{$v.LastIp}}</td>
 			<td>{{$v.LoginCount}}</td>
 			<td>
-				{{if eq $v.Active 1}}
-				<span class="text-success">已激活</span>
-				{{else}}
-				<span class="text-error">未激活</span>
-				{{end}}
+
 			</td>
 			<td>
 				<a href="/admin/user/edit?id={{$v.Id}}">编辑</a> |
@@ -41,7 +37,7 @@
 		</tbody>
 		<tfoot>
 		<tr>
-			<td colspan="20">{{.pagebar}}</td>
+			<td colspan="20">{{.pagebar | html}}</td>
 		</tr>
 		</tfoot>
 	</table>

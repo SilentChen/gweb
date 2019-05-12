@@ -76,36 +76,43 @@ func (_ *Mysql) GetRow(querySql string, record map[string]string) error {
 	return  nil
 }
 
-func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) error {
+func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, error) {
+
+	count := 0
+
 	rows, err := this.instance.Query(querySql)
 	defer rows.Close()
 
 	if nil != err {
-		return err
+		return count, err
 	}
 
 	columns, err := rows.Columns()
 	if nil != err {
-		return err
+		return count, err
 	}
 
-	scanArgs 	:= make([]interface{}, len(columns))
-	values 		:= make([]interface{}, len(columns))
-	record      := make(map[string]string)
+	count = len(columns)
 
-	for j := range values {
-		scanArgs[j] = &values[j]
-	}
+	if count > 0 {
+		scanArgs 	:= make([]interface{}, count)
+		values 		:= make([]interface{}, count)
+		record      := make(map[string]string)
 
-	for rows.Next() {
-		err = rows.Scan(scanArgs...)
-		for i, col := range values {
-			if col != nil {
-				record[columns[i]] = string(col.([]byte))
-			}
+		for j := range values {
+			scanArgs[j] = &values[j]
 		}
-		*records = append(*records, record)
+
+		for rows.Next() {
+			err = rows.Scan(scanArgs...)
+			for i, col := range values {
+				if col != nil {
+					record[columns[i]] = string(col.([]byte))
+				}
+			}
+			*records = append(*records, record)
+		}
 	}
 
-	return nil
+	return count, nil
 }

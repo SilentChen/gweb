@@ -1,6 +1,7 @@
 package util
 
 import (
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -25,6 +26,10 @@ func Str2int(str string) (int) {
 	}
 
 	return  num
+}
+
+func Str2html(raw string) template.HTML {
+	return template.HTML(raw)
 }
 
 /**

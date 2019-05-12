@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"database/sql"
 	"log"
 	"reflect"
 	"web/models"
@@ -29,12 +30,31 @@ func (this *Base) pageOffset(page int) int {
 	return (page - 1) * this.pz
 }
 
-func (this *Base) dbInstance() *models.Mysql{
+func (this *Base) mysqlInstance() *models.Mysql{
 	if nil == this.db {
 		this.db = new(models.Mysql)
 	}
 
 	return this.db
+}
+
+func (this *Base) dbInstance() *sql.DB {
+	if nil == this.db {
+		this.mysqlInstance()
+	}
+
+	return this.db.GetInstance()
+}
+
+func (this *Base) rowsCount(querySql string, key string) int {
+	cmap := make(map[string]string)
+
+	this.db.GetRow(querySql, cmap)
+
+	count := cmap[key]
+
+	return util.Str2int(count)
+
 }
 
 func (this *Base) Invoke(c *gin.Context) {

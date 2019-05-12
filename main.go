@@ -50,6 +50,7 @@ func main() {
 	r.SetFuncMap(template.FuncMap{
 		"echo"	:	fmt.Sprintf,
 		"date"	:	util.Unix2date,
+		"html"	:	util.Str2html,
 	})
 
 	r.LoadHTMLGlob("views/**/**/*")
