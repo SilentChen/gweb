@@ -3,6 +3,7 @@ package admin
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"reflect"
 	"strings"
 	"web/models"
@@ -55,21 +56,20 @@ func (this *Base) Invoke(c *gin.Context) {
 	}
 
 	ctl := c.Param("ctl")
-
-	if "" == ctl {
-		c.Next()
-	}
-
-	controller, exist := ctls[ctl]
-
-	if !exist {
-		c.Next()
-	}
-
 	act := c.Param("act")
 
-	if "" == act {
-		c.Next()
+	if "" == act && "" == ctl {
+		ctl = "index"
+		act = "/index"
+	}else if "/" == act && "" != ctl {
+		act = "/" + ctl
+		ctl = "index"
+	}
+	log.Printf("ctl is %s, act is %s", ctl, act)
+	controller, exist := ctls[ctl]
+	if !exist {
+		c.HTML(http.StatusNotFound, "admin/default", map[string]interface{}{"message"	:	"bad ctl",})
+		return
 	}
 
 	first := strings.ToUpper(act[1:2])
@@ -77,11 +77,15 @@ func (this *Base) Invoke(c *gin.Context) {
 
 	refVal := reflect.ValueOf(controller)
 	method := refVal.MethodByName(act)
-	args := make([]reflect.Value, 0)
-	args[1] = reflect.ValueOf("test")
-	log.Println(args)
-	method.Call(args)
 
+	if method.Kind() == reflect.Invalid {
+		c.HTML(http.StatusNotFound, "admin/default", map[string]interface{}{"message"	:	"bad act",})
+		return
+	}
+
+	args := make([]reflect.Value, 1)
+	args[0] = reflect.ValueOf(c)
+	method.Call(args)
 }
 
 func (this *Base) isPost(c *gin.Context) bool {
@@ -92,6 +96,6 @@ func (this *Base) Display() {
 
 }
 
-func (this *Base) Assign() {
-
+func (this *Base) Assign(c *gin.Context) {
+	log.Println("reflecting")
 }

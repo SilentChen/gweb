@@ -34,7 +34,7 @@ func (_ *Index) Main(c *gin.Context) {
 	})
 }
 
-func (this *Index) WebSet(c *gin.Context) {
+func (this *Index) Webset(c *gin.Context) {
 	if this.isPost(c) {
 		util.Gwebsetting.BantchSet(map[string]string{
 			"webTitle"		:	c.DefaultPostForm("webtitle", ""),

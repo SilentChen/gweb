@@ -90,6 +90,7 @@ func LoadRouters() *gin.Engine {
 	gapi.GET("/", apiTest.Index)
 
 
+	gadmin.GNP("/", adminBase.Invoke)
 	gadmin.GNP("/:ctl/*act", adminBase.Invoke)
 
 	profRouter(r)
