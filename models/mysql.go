@@ -116,3 +116,32 @@ func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, erro
 
 	return count, nil
 }
+
+/**
+ *	@param querySql string
+ *  @return byte or error
+ */
+func (_ *Mysql) GetOne(querySql string) (string, error) {
+	var ret string
+
+	tmp := make([]interface{}, 1)
+	val := make([]interface{}, 1)
+
+	row, err := this.instance.Query(querySql)
+	defer row.Close()
+
+	columns, err := row.Columns()
+
+	if(len(columns) < 0) {
+		if nil != err {
+			return ret, err
+		}
+		tmp[0] = &val[0]
+		row.Next()
+		row.Scan(tmp...)
+
+		ret = string(val[0].([]byte))
+	}
+
+	return ret, err
+}

@@ -46,17 +46,6 @@ func (this *Base) dbInstance() *sql.DB {
 	return this.db.GetInstance()
 }
 
-func (this *Base) rowsCount(querySql string, key string) int {
-	cmap := make(map[string]string)
-
-	this.db.GetRow(querySql, cmap)
-
-	count := cmap[key]
-
-	return util.Str2int(count)
-
-}
-
 func (this *Base) Invoke(c *gin.Context) {
 	m := c.Param("module")
 	a := c.Param("action")
