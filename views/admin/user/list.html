@@ -19,15 +19,13 @@
 		<tbody>
 		{{range $k, $v := .list}}
 		<tr>
-			<td>{{$v.Id}}</td>
-			<td>{{$v.UserName}}</td>
-			<td>{{$v.Email}}</td>
-			<td>{{$v.LastLogin}}</td>
-			<td>{{$v.LastIp}}</td>
-			<td>{{$v.LoginCount}}</td>
-			<td>
-
-			</td>
+			<td>{{$v.id}}</td>
+			<td>{{$v.user_name}}</td>
+			<td>{{$v.email}}</td>
+			<td>{{$v.last_login}}</td>
+			<td>{{$v.last_ip}}</td>
+			<td>{{$v.login_count}}</td>
+			<td>{{$v.active}}</td>
 			<td>
 				<a href="/admin/user/edit?id={{$v.Id}}">编辑</a> |
 				<a href="/admin/user/delete?id={{$v.Id}}" onclick="return del_confirm()">删除</a>

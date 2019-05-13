@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"reflect"
+	"strings"
 	"web/models"
 	"web/packs/gin"
 	"web/packs/util"
@@ -47,22 +48,40 @@ func (this *Base) dbInstance() *sql.DB {
 }
 
 func (this *Base) Invoke(c *gin.Context) {
-	m := c.Param("module")
-	a := c.Param("action")
-	mt := reflect.TypeOf(m)
-	at := reflect.TypeOf(a)
 
-	log.Printf("mt is: %s and at is: %s", mt, at)
+	ctls := map[string]interface{}{
+		"index"		:		&Index{},
+		"user"		:		&User{},
+	}
 
-	mtv := reflect.ValueOf(m)
-	atv := reflect.ValueOf(a)
+	ctl := c.Param("ctl")
 
-	log.Printf("mtv is : %s and atv is: %s", mtv, atv)
+	if "" == ctl {
+		c.Next()
+	}
 
-	//method := mtv.MethodByName("info")
-	//rgs := make([]reflect.Value, 0)
+	controller, exist := ctls[ctl]
 
-	//method.Call(args)
+	if !exist {
+		c.Next()
+	}
+
+	act := c.Param("act")
+
+	if "" == act {
+		c.Next()
+	}
+
+	first := strings.ToUpper(act[1:2])
+	act = first + act[2:]
+
+	refVal := reflect.ValueOf(controller)
+	method := refVal.MethodByName(act)
+	args := make([]reflect.Value, 0)
+	args[1] = reflect.ValueOf("test")
+	log.Println(args)
+	method.Call(args)
+
 }
 
 func (this *Base) isPost(c *gin.Context) bool {

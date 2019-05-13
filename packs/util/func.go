@@ -82,6 +82,14 @@ func Unix2date(utime int64) string {
 	return time.Unix(utime, 0).Format(Gtime_layout)
 }
 
+func OnceTimerTask(second time.Duration, f func()) {
+	timer := time.NewTimer(time.Second * second)
+	go func() {
+		<- timer.C
+		f()
+	}()
+}
+
 func Request(reqType string, url string, params string, headers map[string]string) (string,error) {
 	ret := ""
 	client := http.Client{}

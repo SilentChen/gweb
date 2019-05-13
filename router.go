@@ -84,18 +84,13 @@ func LoadRouters() *gin.Engine {
 
 	// some handler init
 	apiTest := new(api.Test)
-	adminIndex := new(admin.Index)
-	adminUser  := new(admin.User)
+	adminBase := new(admin.Base)
 
 	// link the route pattern to the handler
 	gapi.GET("/", apiTest.Index)
 
 
-	gadmin.GNP("/", adminIndex.Index)
-	gadmin.GNP("/main", adminIndex.Main)
-	gadmin.GNP("/webset", adminIndex.WebSet)
-	gadmin.GNP("/user/list", adminUser.Ulist)
-	gadmin.GNP("/user/add", adminUser.Uadd)
+	gadmin.GNP("/:ctl/*act", adminBase.Invoke)
 
 	profRouter(r)
 	/*articles := new(app.Articles)

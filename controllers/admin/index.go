@@ -1,7 +1,9 @@
 package admin
 
 import (
+	"fmt"
 	"os"
+	"reflect"
 	"runtime"
 	"web/packs/gin"
 	"web/packs/util"
@@ -43,6 +45,24 @@ func (this *Index) WebSet(c *gin.Context) {
 			"webKeyWord"	:	c.DefaultPostForm("webkeyword", ""),
 			"webDesc"		:	c.DefaultPostForm("webdesc", ""),
 			"webTheme"		:	c.DefaultPostForm("webtheme", ""),
+		})
+
+		querySql := "replace into `option` (`name`, `value`) values"
+
+		refType := reflect.TypeOf(util.Gwebsetting)
+		refVal  := reflect.ValueOf(util.Gwebsetting)
+		times 	:= refType.NumField() - 1
+		for i := 0; i < times; i++ {
+			if refVal.Field(i).Kind() == reflect.Int {
+				querySql += fmt.Sprintf("(\"%s\",\"%s\"),", refType.Field(i).Name, util.Int642str(refVal.Field(i).Int()))
+			}else{
+				querySql += fmt.Sprintf("(\"%s\",\"%s\"),", refType.Field(i).Name, refVal.Field(i).String())
+			}
+		}
+
+		util.OnceTimerTask(3, func(){
+			this.mysqlInstance().Exec(querySql[0:len(querySql) - 1])
+
 		})
 	}
 

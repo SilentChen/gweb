@@ -130,9 +130,13 @@ func (_ *Mysql) GetOne(querySql string) (string, error) {
 	row, err := this.instance.Query(querySql)
 	defer row.Close()
 
+	if nil != err {
+		return ret, err
+	}
+
 	columns, err := row.Columns()
 
-	if(len(columns) < 0) {
+	if(len(columns) > 0) {
 		if nil != err {
 			return ret, err
 		}
@@ -144,4 +148,8 @@ func (_ *Mysql) GetOne(querySql string) (string, error) {
 	}
 
 	return ret, err
+}
+
+func (_ *Mysql) Exec(querySql string) (sql.Result, error) {
+	return this.instance.Exec(querySql)
 }
