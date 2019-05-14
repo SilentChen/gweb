@@ -2,7 +2,6 @@ package admin
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -15,6 +14,8 @@ type Base struct {
 	db *models.Mysql	//mysql instance
 	pz int				//pagesize
 }
+
+var this Base
 
 func (this *Base) pageSize() int {
 	if 0 == this.pz {
@@ -48,6 +49,10 @@ func (this *Base) dbInstance() *sql.DB {
 	return this.db.GetInstance()
 }
 
+func (this *Base) isPost(c *gin.Context) bool {
+	return c.Request.Method == "POST"
+}
+
 func (this *Base) Invoke(c *gin.Context) {
 
 	ctls := map[string]interface{}{
@@ -65,15 +70,15 @@ func (this *Base) Invoke(c *gin.Context) {
 		act = "/" + ctl
 		ctl = "index"
 	}
-	log.Printf("ctl is %s, act is %s", ctl, act)
+
 	controller, exist := ctls[ctl]
 	if !exist {
 		c.HTML(http.StatusNotFound, "admin/default", map[string]interface{}{"message"	:	"bad ctl",})
 		return
 	}
 
-	first := strings.ToUpper(act[1:2])
-	act = first + act[2:]
+	first := strings.ToUpper(act[1:2])		//turn the second char into upper
+	act = first + act[2:]					//cut the string begin from the third char, first is '/', the second will be replace by it's upper own
 
 	refVal := reflect.ValueOf(controller)
 	method := refVal.MethodByName(act)
@@ -83,19 +88,10 @@ func (this *Base) Invoke(c *gin.Context) {
 		return
 	}
 
+	c.Set("ctl", ctl)
+	c.Set("act", act)
+
 	args := make([]reflect.Value, 1)
 	args[0] = reflect.ValueOf(c)
 	method.Call(args)
-}
-
-func (this *Base) isPost(c *gin.Context) bool {
-	return c.Request.Method == "POST"
-}
-
-func (this *Base) Display() {
-
-}
-
-func (this *Base) Assign(c *gin.Context) {
-	log.Println("reflecting")
 }

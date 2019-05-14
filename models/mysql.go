@@ -88,6 +88,7 @@ func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, erro
 	}
 
 	columns, err := rows.Columns()
+
 	if nil != err {
 		return count, err
 	}
@@ -110,6 +111,7 @@ func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, erro
 					record[columns[i]] = string(col.([]byte))
 				}
 			}
+
 			*records = append(*records, record)
 		}
 	}

@@ -3,6 +3,7 @@ package admin
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"web/packs/gin"
 	"web/packs/util"
 )
@@ -22,17 +23,27 @@ func (this *User) List(c *gin.Context) {
 
 	pagebar := util.NewPager(page, util.Str2int(count), this.pageSize(), "/admin/user/list", true).ToString()
 
-	log.Println(users)
-
-	c.HTML(200, "admin/user/list", map[string]interface{}{
+	c.HTML(http.StatusOK, "admin/user/list", map[string]interface{}{
 		"list"			:		users,
 		"pagebar"		:		pagebar,
 	})
 }
 
-func (this *User) Add(c *gin.Context) {
-	log.Println("testtest")
-	/*c.HTML(200, "admin/user/add", map[string]interface{}{
-		"test"		:		"a",
-	})*/
+func (this *User) Edit(c *gin.Context) {
+	uinfo := map[string]interface{} {
+		"username"		:		"",
+		"password"		:		"",
+		"password2"		:		"",
+		"email"			:		"",
+		"active"		:		0,
+
+	}
+
+	id := c.Query("id")
+	log.Println(id)
+
+
+	c.HTML(http.StatusOK, "admin/user/edit", map[string]interface{}{
+		"uinfo"		:		uinfo,
+	})
 }

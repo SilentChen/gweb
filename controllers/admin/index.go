@@ -2,6 +2,7 @@ package admin
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"reflect"
 	"runtime"
@@ -14,14 +15,14 @@ type Index struct {
 }
 
 func (_ *Index) Index(c *gin.Context) {
-	c.HTML(util.Ghttp_status_success, "admin/index", map[string]interface{}{
+	c.HTML(http.StatusOK, "admin/index", map[string]interface{}{
 		"admin_name"	:		"admin",
 		"version"		:		"1.0.1",
 	})
 }
 
 func (_ *Index) Main(c *gin.Context) {
-	c.HTML(util.Ghttp_status_success, "admin/main", map[string]interface{}{
+	c.HTML(http.StatusOK, "admin/main", map[string]interface{}{
 		"app_ver"	:	"1.0.1",
 		"hostname"	:	getHostName(),
 		"go_ver"	:	runtime.Version(),
@@ -66,7 +67,7 @@ func (this *Index) Webset(c *gin.Context) {
 		})
 	}
 
-	c.HTML(util.Ghttp_status_success, "admin/system", map[string]interface{}{
+	c.HTML(http.StatusOK, "admin/system", map[string]interface{}{
 		"webtitle"		:		util.Gwebsetting.Get("webTitle"),
 		"websubtitle"	:		util.Gwebsetting.Get("webSubTitle"),
 		"weburl"		:		util.Gwebsetting.Get("webUrl"),
