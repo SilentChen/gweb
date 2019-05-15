@@ -119,10 +119,6 @@ func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, erro
 	return count, nil
 }
 
-/**
- *	@param querySql string
- *  @return byte or error
- */
 func (_ *Mysql) GetOne(querySql string) (string, error) {
 	var ret string
 
