@@ -77,7 +77,7 @@ func (this *Base) Invoke(c *gin.Context) {
 		return
 	}
 
-	first := strings.ToUpper(act[1:2])		//turn the second char into upper
+	first := strings.ToUpper(act[1:2])		//change the second char into upper
 	act = first + act[2:]					//cut the string begin from the third char, first is '/', the second will be replace by it's upper own
 
 	refVal := reflect.ValueOf(controller)

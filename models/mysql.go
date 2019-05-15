@@ -2,12 +2,15 @@ package models
 
 import (
 	"database/sql"
+	"strings"
+	"sync"
 	_ "web/packs/gin/plugins/mysql"
 	"web/packs/util"
 )
 
 type Mysql struct {
 	instance *sql.DB
+	lock	sync.Mutex
 }
 
 var this Mysql
@@ -24,7 +27,7 @@ func init() {
 
 	dns := db_user + ":" + db_pwd + "@tcp(" + db_host + ":" + db_port + ")/" + db_name + "?charset=" + db_char + "&loc=Asia%2FShanghai"
 
-	this.instance, err = sql.Open("mysql", dns)
+	this.instance, err = sql.Open(util.Gapp_db, dns)
 
 	err_dping := this.instance.Ping()
 
@@ -45,78 +48,87 @@ func (_ *Mysql) GetInstance() *sql.DB{
 	return this.instance
 }
 
-func (_ *Mysql) GetRow(querySql string, record map[string]string) error {
+func (_ *Mysql) GetAll (querySql string, columns string) (int, *[]map[string]string, error) {
+	var total_num int
+	var err error
+	var ret []map[string]string
+
+	err = this.instance.QueryRow(strings.Replace(querySql,"?", "count(*)", 1)).Scan(&total_num)
+
+
+	if(nil != err || total_num < 1) {
+		return total_num,&ret, err
+	}
+
+	var rows *sql.Rows
+	rows, err  = this.instance.Query(strings.Replace(querySql, "?", columns, 1))
+	defer rows.Close()
+
+	if nil != err {
+		return total_num,&ret, err
+	}
+
+	var rcol  []string
+	rcol, err = rows.Columns()
+	if err != nil {
+		return total_num,&ret, err
+	}
+	cnum := len(rcol)
+
+	ret = make([]map[string]string, total_num)
+	scaner := make([]interface{}, cnum)
+	values := make([]interface{}, cnum)
+	for j := range values {
+		scaner[j] = &values[j]
+	}
+
+	index := 0
+	for rows.Next() {
+		err = rows.Scan(scaner...)
+		ret[index] = make(map[string]string)
+		for i, col := range values {
+			if nil != col {
+				ret[index][rcol[i]] = string(col.([]byte))
+			}
+		}
+		index += 1
+	}
+
+	return total_num,&ret, nil
+}
+
+func (_ *Mysql) GetRow(querySql string) (*map[string]string, error) {
+	var ret map[string]string
+
 	row, err := this.instance.Query(querySql)
 	defer row.Close()
 
 	if nil != err {
-		return err
+		return &ret, err
 	}
 
 	columns, err := row.Columns()
 	if nil != err {
-		return err
+		return &ret, err
 	}
 
-	scanArgs := make([]interface{}, len(columns))
-	values   := make([]interface{}, len(columns))
+	cnum := len(columns)
+	scaner := make([]interface{}, cnum)
+	values := make([]interface{}, cnum)
 
 	for j := range values {
-		scanArgs[j] = &values[j]
+		scaner[j] = &values[j]
 	}
 
 	row.Next()
-	err = row.Scan(scanArgs...)
+	err = row.Scan(scaner...)
 	for i, col := range values {
 		if nil != col {
-			record[columns[i]] = string(col.([]byte))
+			ret[columns[i]] = string(col.([]byte))
 		}
 	}
 
-	return  nil
-}
-
-func (_ *Mysql) GetAll(querySql string, records *[]map[string]string) (int, error) {
-
-	count := 0
-
-	rows, err := this.instance.Query(querySql)
-	defer rows.Close()
-
-	if nil != err {
-		return count, err
-	}
-
-	columns, err := rows.Columns()
-
-	if nil != err {
-		return count, err
-	}
-
-	count = len(columns)
-
-	if count > 0 {
-		scanArgs 	:= make([]interface{}, count)
-		values 		:= make([]interface{}, count)
-		record      := make(map[string]string)
-
-		for j := range values {
-			scanArgs[j] = &values[j]
-		}
-
-		for rows.Next() {
-			err = rows.Scan(scanArgs...)
-			for i, col := range values {
-				if col != nil {
-					record[columns[i]] = string(col.([]byte))
-				}
-			}
-
-			*records = append(*records, record)
-		}
-	}
-
-	return count, nil
+	return  &ret, nil
 }
 
 func (_ *Mysql) GetOne(querySql string) (string, error) {
