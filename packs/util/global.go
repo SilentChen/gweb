@@ -8,6 +8,7 @@ const (
 	Gapp_mode				=	"dev"
 	Gapp_ver				=	"1.0.0"
 	Gapp_port				=	":8080"
+	Gapp_db					=	"mysql"
 	Gmysql_host				=	"106.12.130.31"
 	Gmysql_port				=	"3306"
 	Gmysql_user				=	"blog"
