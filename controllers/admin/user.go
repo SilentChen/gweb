@@ -26,17 +26,21 @@ func (this *User) List(c *gin.Context) {
 }
 
 func (this *User) Edit(c *gin.Context) {
-	uinfo := map[string]interface{} {
+	uinfo := map[string]string {
 		"username"		:		"",
 		"password"		:		"",
 		"password2"		:		"",
 		"email"			:		"",
-		"active"		:		0,
+		"active"		:		"0",
 
 	}
 
 	id := c.Query("id")
-	log.Println(id)
+	if "" != id {
+		tmp, err :=  this.mysqlInstance().GetRow(fmt.Sprint("select * from user where id = %d", id))
+		util.CheckErr(err)
+		log.Println(tmp)
+	}
 
 
 	c.HTML(http.StatusOK, "admin/user/edit", map[string]interface{}{

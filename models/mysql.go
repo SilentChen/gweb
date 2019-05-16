@@ -98,7 +98,7 @@ func (_ *Mysql) GetAll (querySql string, columns string) (int, *[]map[string]str
 }
 
 func (_ *Mysql) GetRow(querySql string) (*map[string]string, error) {
-	var ret map[string]string
+	ret := make(map[string]string, 1)
 
 	row, err := this.instance.Query(querySql)
 	defer row.Close()
@@ -132,30 +132,16 @@ func (_ *Mysql) GetRow(querySql string) (*map[string]string, error) {
 }
 
 func (_ *Mysql) GetOne(querySql string) (string, error) {
-	var ret string
+	var tmp interface{}
+	ret := ""
 
-	tmp := make([]interface{}, 1)
-	val := make([]interface{}, 1)
-
-	row, err := this.instance.Query(querySql)
-	defer row.Close()
+	err := this.instance.QueryRow(querySql).Scan(&tmp)
 
 	if nil != err {
 		return ret, err
 	}
 
-	columns, err := row.Columns()
-
-	if(len(columns) > 0) {
-		if nil != err {
-			return ret, err
-		}
-		tmp[0] = &val[0]
-		row.Next()
-		row.Scan(tmp...)
-
-		ret = string(val[0].([]byte))
-	}
+	ret = string(tmp.([]byte))
 
 	return ret, err
 }
