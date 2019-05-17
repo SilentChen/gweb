@@ -2,6 +2,7 @@ package admin
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -53,6 +54,20 @@ func (this *Base) isPost(c *gin.Context) bool {
 	return c.Request.Method == "POST"
 }
 
+func (this *Base) paramCheckExist(c *gin.Context, key string, in *string, msg string) {
+	tmp := c.Param(key)
+	if "" == tmp {
+		tmp = c.PostForm(key)
+	}
+
+	if "" == tmp {
+		c.Redirect(http.StatusForbidden, "admin/")
+	}else{
+		res := copy(util.Str2byte(*in), util.Str2byte(tmp))
+		log.Println("copy result is: ", res, util.Str2byte(tmp))
+	}
+}
+
 func (this *Base) Invoke(c *gin.Context) {
 
 	ctls := map[string]interface{}{
@@ -94,4 +109,8 @@ func (this *Base) Invoke(c *gin.Context) {
 	args := make([]reflect.Value, 1)
 	args[0] = reflect.ValueOf(c)
 	method.Call(args)
+}
+
+func (this *Base) Errorshow(c *gin.Context, msg string) {
+	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
 }

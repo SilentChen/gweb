@@ -98,11 +98,10 @@ func (_ *Mysql) GetAll (querySql string, columns string) (int, *[]map[string]str
 }
 
 func (_ *Mysql) GetRow(querySql string) (*map[string]string, error) {
-	ret := make(map[string]string, 1)
+	ret := make(map[string]string)
 
 	row, err := this.instance.Query(querySql)
 	defer row.Close()
-
 	if nil != err {
 		return &ret, err
 	}

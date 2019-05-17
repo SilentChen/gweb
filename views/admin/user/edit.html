@@ -1,7 +1,13 @@
 {{define "admin/user/edit"}}
 {{template "admin/header"}}
 <fieldset>
-	<legend>添加用户</legend>
+	<legend>
+	{{if eq .desc "add"}}
+			添加用户
+	{{else}}
+			修改用户
+	{{end}}
+	</legend>
 
 	<form class="form-horizontal" method="post">
 		<table class="table table-form">
@@ -26,9 +32,9 @@
 			<tr>
 				<th>激活状态：</th>
 				<td>
-					<input type="radio" name="active" value="0" id="data_active_0" checked />
+					<input type="radio" name="active" value="0" id="data_active_0" {{if eq .uinfo.active "0"}}checked{{end}} />
 					<label for="data_active_0" class="help-inline">未激活</label>&nbsp;&nbsp;
-					<input type="radio" name="active" value="1" id="data_active_1" />
+					<input type="radio" name="active" value="1" id="data_active_1" {{if eq .uinfo.active "1"}}checked{{end}} />
 					<label for="data_active_1" class="help-inline">已激活</label>&nbsp;&nbsp;</td>
 			</tr>
 			</tbody>

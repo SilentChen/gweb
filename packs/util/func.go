@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 )
 
 func CheckErr(err error) {
@@ -80,6 +81,36 @@ func Date2unix(date string) int64 {
 
 func Unix2date(utime int64) string {
 	return time.Unix(utime, 0).Format(Gtime_layout)
+}
+
+func Str2byte(str string) []byte {
+	return []byte(str)
+}
+
+func Byte2str(b []byte) string {
+	return string(b)
+}
+
+func Byte2int(b []byte)int{
+	var ret int = 0
+	var len int = len(b)
+	var i uint = 0
+	for i=0; i<uint(len); i++{
+		ret = ret | (int(b[i]) << (i*8))
+	}
+	return ret
+}
+
+func Int2byte(i int) []byte {
+	var len uintptr = unsafe.Sizeof(i)
+	ret := make([]byte, len)
+	var tmp int = 0xff
+	var index uint = 0
+	for index=0; index < uint(len); index++ {
+		ret[index] = byte((tmp << (index*8) & i) >> (index*8))
+	}
+
+	return ret
 }
 
 func OnceTimerTask(second time.Duration, f func()) {
