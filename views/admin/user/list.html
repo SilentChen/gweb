@@ -25,7 +25,13 @@
 			<td>{{$v.last_login}}</td>
 			<td>{{$v.last_ip}}</td>
 			<td>{{$v.login_count}}</td>
-			<td>{{$v.active}}</td>
+			<td>
+				{{if eq $v.active "1"}}
+				<span class="text-success">已激活</span>
+				{{else}}
+				<span class="text-error">未激活</span>
+				{{end}}
+			</td>
 			<td>
 				<a href="/admin/user/edit?id={{$v.id}}">编辑</a> |
 				<a href="/admin/user/delete?id={{$v.Id}}" onclick="return del_confirm()">删除</a>
