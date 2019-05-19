@@ -2,7 +2,6 @@ package admin
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"web/packs/gin"
 	"web/packs/util"
@@ -49,22 +48,47 @@ func (this *User) Edit(c *gin.Context) {
 	if this.isPost(c) {
 		var querySql,username,password,password2,email,active,id string
 
-		this.paramCheckExist(c,"username", &username, "bad username")
-		this.paramCheckExist(c,"password", &password, "bad password")
-		this.paramCheckExist(c,"password2", &password2, "bad password2")
-		this.paramCheckExist(c,"email", &email, "bad email")
-		this.paramCheckExist(c,"active", &active, "bad active")
+		params, errMsg := this.getAndCheckParams(c, []string{"username", "password", "password2", "email", "active"})
+		if len(errMsg) > 0 {
+			this.errorShow(c, errMsg)
+			return
+		}
+
+		username 	= params["username"]
+		password 	= params["password"]
+		password2 	= params["password2"]
+		email 		= params["email"]
+		active 		= params["active"]
 
 		id = c.DefaultPostForm("id", "")
 
-		if "" != id {
-			querySql = fmt.Sprintf("update user set user_name = %s, password = password(%s), email = %s, active = %s whhere id = %s", username, password, email, active, id)
-		}else{
-			querySql = fmt.Sprintf("insert into user (user_name, password, email, active) values(%s,password(%s),%s,%s)", username, password, email, active)
+		if password != password2 {
+			this.errorShow(c, []string{"bad two params"})
+			return
 		}
-		log.Println("sql is: ", querySql)
-		affRow, _ := this.mysqlInstance().Exec(querySql)
-		log.Println("affective row is: ", affRow)
+
+		var arow int64
+		if "" != id {
+			querySql = fmt.Sprintf("update user set user_name = '%s', password = password('%s'), email = '%s', active = '%s' where id = %s", username, password, email, active, id)
+			dbRet, err := this.mysqlInstance().Exec(querySql)
+			util.CheckErr(err)
+			arow, _ = dbRet.RowsAffected()
+
+		}else{
+			querySql = fmt.Sprintf("insert into user (user_name, password, email, active) values('%s',password('%s'),'%s','%s')", username, password, email, active)
+			dbRet, err := this.mysqlInstance().Exec(querySql)
+			util.CheckErr(err)
+			arow, _ = dbRet.RowsAffected()
+			tmpId, _ := dbRet.LastInsertId()
+			id = util.Int642str(tmpId)
+		}
+
+		if arow > 0 {
+			uinfo["username"]	=	username
+			uinfo["email"]		=	email
+			uinfo["active"]		=	active
+			uinfo["id"]			=	id
+		}
 	}
 
 	c.HTML(http.StatusOK, "admin/user/edit", map[string]interface{}{

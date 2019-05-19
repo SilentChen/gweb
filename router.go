@@ -89,7 +89,6 @@ func LoadRouters() *gin.Engine {
 	// link the route pattern to the handler
 	gapi.GET("/", apiTest.Index)
 
-
 	gadmin.GNP("/", adminBase.Invoke)
 	gadmin.GNP("/:ctl/*act", adminBase.Invoke)
 

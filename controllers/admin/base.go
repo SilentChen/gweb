@@ -2,7 +2,7 @@ package admin
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -54,22 +54,33 @@ func (this *Base) isPost(c *gin.Context) bool {
 	return c.Request.Method == "POST"
 }
 
-func (this *Base) paramCheckExist(c *gin.Context, key string, in *string, msg string) {
-	tmp := c.Param(key)
-	if "" == tmp {
-		tmp = c.PostForm(key)
+func (this *Base) getAndCheckParams(c *gin.Context, params []string) (map[string]string, []string) {
+	ret := make(map[string]string)
+	var errMsg []string
+
+	if len(params) < 1 {
+		return ret, errMsg
 	}
 
-	if "" == tmp {
-		c.Redirect(http.StatusForbidden, "admin/")
-	}else{
-		res := copy(util.Str2byte(*in), util.Str2byte(tmp))
-		log.Println("copy result is: ", res, util.Str2byte(tmp))
+	tmp := ""
+	for _, v := range params {
+		tmp = c.Query(v)
+		if "" == tmp {
+			tmp = c.PostForm(v)
+		}
+
+		if "" == tmp {
+			errMsg = append(errMsg, fmt.Sprintf("bad param: %s", v))
+		}else{
+			ret[v] = tmp
+		}
+
 	}
+
+	return ret, errMsg
 }
 
 func (this *Base) Invoke(c *gin.Context) {
-
 	ctls := map[string]interface{}{
 		"index"		:		&Index{},
 		"user"		:		&User{},
@@ -85,10 +96,9 @@ func (this *Base) Invoke(c *gin.Context) {
 		act = "/" + ctl
 		ctl = "index"
 	}
-
 	controller, exist := ctls[ctl]
 	if !exist {
-		c.HTML(http.StatusNotFound, "admin/default", map[string]interface{}{"message"	:	"bad ctl",})
+		this.errorShow(c, []string{"bad ctl"})
 		return
 	}
 
@@ -97,12 +107,10 @@ func (this *Base) Invoke(c *gin.Context) {
 
 	refVal := reflect.ValueOf(controller)
 	method := refVal.MethodByName(act)
-
 	if method.Kind() == reflect.Invalid {
-		c.HTML(http.StatusNotFound, "admin/default", map[string]interface{}{"message"	:	"bad act",})
+		this.errorShow(c, []string{"bad act"})
 		return
 	}
-
 	c.Set("ctl", ctl)
 	c.Set("act", act)
 
@@ -111,6 +119,16 @@ func (this *Base) Invoke(c *gin.Context) {
 	method.Call(args)
 }
 
-func (this *Base) Errorshow(c *gin.Context, msg string) {
+func (this *Base) errorShow(c *gin.Context, errMsg []string) {
+	var msg string
+	if len(errMsg) > 0 {
+		for _, v := range errMsg {
+			msg += v + "<br/>"
+		}
+	}
+	if "" == msg {
+		msg = "Oh God ! Something Go Wrong !"
+	}
 	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
+	return
 }
