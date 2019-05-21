@@ -84,6 +84,7 @@ func (this *Base) Invoke(c *gin.Context) {
 	ctls := map[string]interface{}{
 		"index"		:		&Index{},
 		"user"		:		&User{},
+		"article"	:		&Article{},
 	}
 
 	ctl := c.Param("ctl")
@@ -127,7 +128,7 @@ func (this *Base) errorShow(c *gin.Context, errMsg []string) {
 		}
 	}
 	if "" == msg {
-		msg = "Oh God ! Something Go Wrong !"
+		msg = "Oh God ! Something Went Wrong !"
 	}
 	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
 	return

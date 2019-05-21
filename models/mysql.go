@@ -145,6 +145,18 @@ func (_ *Mysql) GetOne(querySql string) (string, error) {
 	return ret, err
 }
 
+func (_ *Mysql) DefGetOne(querySql, defaultStr string) (string) {
+	var tmp interface{}
+
+	err := this.instance.QueryRow(querySql).Scan(&tmp)
+
+	if nil != err {
+		return defaultStr
+	}
+
+	return string(tmp.([]byte))
+}
+
 func (_ *Mysql) Exec(querySql string) (sql.Result, error) {
 	return this.instance.Exec(querySql)
 }

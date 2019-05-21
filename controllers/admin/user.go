@@ -46,7 +46,7 @@ func (this *User) Edit(c *gin.Context) {
 	}
 
 	if this.isPost(c) {
-		var querySql,username,password,password2,email,active,id string
+		var querySql, id string
 
 		params, errMsg := this.getAndCheckParams(c, []string{"username", "password", "password2", "email", "active"})
 		if len(errMsg) > 0 {
@@ -54,28 +54,22 @@ func (this *User) Edit(c *gin.Context) {
 			return
 		}
 
-		username 	= params["username"]
-		password 	= params["password"]
-		password2 	= params["password2"]
-		email 		= params["email"]
-		active 		= params["active"]
-
 		id = c.DefaultPostForm("id", "")
 
-		if password != password2 {
+		if params["password"] != params["password2"] {
 			this.errorShow(c, []string{"bad two params"})
 			return
 		}
 
 		var arow int64
 		if "" != id {
-			querySql = fmt.Sprintf("update user set user_name = '%s', password = password('%s'), email = '%s', active = '%s' where id = %s", username, password, email, active, id)
+			querySql = fmt.Sprintf("update user set user_name = '%s', password = password('%s'), email = '%s', active = '%s' where id = %s", params["username"],  params["password"], params["email"], params["active"], id)
 			dbRet, err := this.mysqlInstance().Exec(querySql)
 			util.CheckErr(err)
 			arow, _ = dbRet.RowsAffected()
 
 		}else{
-			querySql = fmt.Sprintf("insert into user (user_name, password, email, active) values('%s',password('%s'),'%s','%s')", username, password, email, active)
+			querySql = fmt.Sprintf("insert into user (user_name, password, email, active) values('%s',password('%s'),'%s','%s')", params["username"], params["password"], params["email"], params["active"])
 			dbRet, err := this.mysqlInstance().Exec(querySql)
 			util.CheckErr(err)
 			arow, _ = dbRet.RowsAffected()
@@ -84,9 +78,9 @@ func (this *User) Edit(c *gin.Context) {
 		}
 
 		if arow > 0 {
-			uinfo["username"]	=	username
-			uinfo["email"]		=	email
-			uinfo["active"]		=	active
+			uinfo["username"]	=	params["username"]
+			uinfo["email"]		=	params["email"]
+			uinfo["active"]		=	params["active"]
 			uinfo["id"]			=	id
 		}
 	}

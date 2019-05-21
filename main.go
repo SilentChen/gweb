@@ -48,9 +48,9 @@ func main() {
 	r.Delims("{{", "}}")
 
 	r.SetFuncMap(template.FuncMap{
-		"echo"	:	fmt.Sprintf,
-		"date"	:	util.Unix2date,
-		"html"	:	util.Str2html,
+		"echo"		:	fmt.Sprintf,
+		"date"		:	util.DateFormat,
+		"str2html"	:	util.Str2html,
 	})
 
 	r.LoadHTMLGlob("views/**/**/*")

@@ -72,6 +72,12 @@ func Str2int642 (str string, defaultNum int64) (int64) {
 	return num
 }
 
+func DateFormat(t time.Time, format string) string {
+	replacer := strings.NewReplacer(datePatterns...)
+	format = replacer.Replace(format)
+	return t.Format(format)
+}
+
 func Date2unix(date string) int64 {
 	timezone, _ := time.LoadLocation("Local")
 	tmp, _ := time.ParseInLocation(Gtime_layout, date, timezone)
