@@ -33,6 +33,7 @@ func (this *User) Edit(c *gin.Context) {
 	}
 
 	desc := "add"
+	gmsg := make(map[string]string)
 
 	id := c.Query("id")
 	if "" != id {
@@ -82,11 +83,17 @@ func (this *User) Edit(c *gin.Context) {
 			uinfo["email"]		=	params["email"]
 			uinfo["active"]		=	params["active"]
 			uinfo["id"]			=	id
+			gmsg["msg"] 	= 	"success !"
+			gmsg["color"]	=	"success"
+		}else{
+			gmsg["msg"] 	= 	"fail, please try again"
+			gmsg["color"]	=	"error"
 		}
 	}
 
 	c.HTML(http.StatusOK, "admin/user/edit", map[string]interface{}{
 		"uinfo"		:		uinfo,
 		"desc"		:		desc,
+		"gmsg"		:		gmsg,
 	})
 }

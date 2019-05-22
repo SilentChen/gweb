@@ -1,18 +1,24 @@
 {{define "admin/article/edit"}}
-{{template "admin/header"}}
+{{template "admin/header" .}}
+
 <fieldset>
-	<legend>编辑文章</legend>
-	<form method="post" name="p" action="/admin/article/save">
-		<input type="hidden" name="id" value="{{.post.Id}}" />
+	<legend>
+		{{if eq .desc "add"}}
+			添加文章
+		{{else}}
+			编辑文章
+		{{end}}
+	</legend>
+	<form method="post" name="p" action="/admin/article/edit?id={{.post.id}}">
 		<table class="table table-form">
 			<tbody>
 			<tr>
 				<th width="60">标题</th>
 				<td>
-					<input type="text" name="title" class="span6" value="{{.post.title}}" {{if .post.Color}}style="color:{{.post.Color}}"{{end}} />
+					<input type="text" name="title" class="span6" value="{{.post.title}}" {{if .post.color}}style="color:{{.post.color}}"{{end}} />
 					<input name="color" value="{{.post.color}}" type="hidden" />
 					<img src="/static/themes/admin/img/colorpicker.png" id="colorpicker" style="cursor:pointer;margin:0 10px 10px 5px;" />
-					<span><label class="help-inline"><input type="checkbox" value="1" name="istop" {{if .post.is_top}}checked{{end}} /> 置顶文章</label></span>
+					<span><label class="help-inline"><input type="checkbox" value="1" name="is_top" {{if .post.is_top}}checked{{end}} /> 置顶文章</label></span>
 				</td>
 			</tr>
 			<tr>
@@ -88,6 +94,5 @@
 		});
 	});
 </script>
-
 {{template "admin/footer"}}
 {{end}}
