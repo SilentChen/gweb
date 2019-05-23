@@ -127,6 +127,19 @@ func OnceTimerTask(second time.Duration, f func()) {
 	}()
 }
 
+func Join(arr []string, flag string) string {
+	ret := ""
+	if len(arr) < 1 {
+		return ret
+	}
+
+	for _, v := range arr {
+		ret += v + flag
+	}
+
+	return ret[0:len(ret) - 1]
+}
+
 func Request(reqType string, url string, params string, headers map[string]string) (string,error) {
 	ret := ""
 	client := http.Client{}

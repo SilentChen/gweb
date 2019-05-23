@@ -11,6 +11,16 @@ import (
 	"web/packs/util"
 )
 
+const (
+	APISTATUS_OK			=	"0"			//	success
+	APISTATUS_FAIL			=	"1"			//	fail, maybe network, try again
+	APISTATUS_ERR			=	"-1"		//	error, program go wrong
+	APISTATUS_ERRPARAMS		=	"-2"		//	bad params
+	APISTATUS_ERRINVOLID	=	"-3"		//	involid opt
+	APISTATUS_MYSQLQUERY	=	"-4"		//	mysql query error
+	APISTATUS_MYSQLAROW		=	"-5"		//	mysql affected row error
+)
+
 type Base struct {
 	db *models.Mysql	//mysql instance
 	pz int				//pagesize
@@ -97,6 +107,7 @@ func (this *Base) Invoke(c *gin.Context) {
 		act = "/" + ctl
 		ctl = "index"
 	}
+
 	controller, exist := ctls[ctl]
 	if !exist {
 		this.errorShow(c, []string{"bad ctl"})

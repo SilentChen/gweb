@@ -18,7 +18,7 @@
 					<input type="text" name="title" class="span6" value="{{.post.title}}" {{if .post.color}}style="color:{{.post.color}}"{{end}} />
 					<input name="color" value="{{.post.color}}" type="hidden" />
 					<img src="/static/themes/admin/img/colorpicker.png" id="colorpicker" style="cursor:pointer;margin:0 10px 10px 5px;" />
-					<span><label class="help-inline"><input type="checkbox" value="1" name="is_top" {{if .post.is_top}}checked{{end}} /> 置顶文章</label></span>
+					<span><label class="help-inline"><input type="checkbox" value="1" name="is_top" {{if eq .post.is_top "1"}}checked{{end}} /> 置顶文章</label></span>
 				</td>
 			</tr>
 			<tr>
