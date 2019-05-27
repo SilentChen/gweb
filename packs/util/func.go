@@ -4,11 +4,55 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 	"unsafe"
 )
+
+///////////////////////////////////////////////////////////////////////////////
+// something related to try catch finally
+// demo:
+// Try(panic("123"))
+// .Catch(1, func(e interface{}) { fmt.Println("int", e)})
+// .Catch("", func(e interface{}) {fmt.Println("string", e)})
+// .Finally(func() {fmt.Println("error")})
+type TryExceptionHandler func(interface{})
+
+type tryStruct struct {
+	catches map[reflect.Type]TryExceptionHandler
+	hold    func()
+}
+
+func Try (f func()) *tryStruct {
+	return &tryStruct {
+		catches: make(map[reflect.Type]TryExceptionHandler),
+		hold:    f,
+	}
+}
+
+// register the exception func (second parameter) with the reflect type of first parameter
+func (t *tryStruct) Catch(e interface{}, f TryExceptionHandler) *tryStruct {
+	t.catches[reflect.TypeOf(e)] = f
+	return t
+}
+
+//do the call and if something go wrong, it will try to recover and exec the func which was setted at the catch stage
+func (t *tryStruct) Finally(f func()) {
+	defer func() {
+		if e:= recover(); nil != e {
+			if h, ok := t.catches[reflect.TypeOf(e)]; ok {
+				h(e)
+			} else {
+				f()
+			}
+		}
+	}()
+	t.hold()
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 func CheckErr(err error) {
 	if nil != err {

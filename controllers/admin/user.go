@@ -2,7 +2,6 @@ package admin
 
 import (
 	"fmt"
-	"net/http"
 	"web/packs/gin"
 	"web/packs/util"
 )
@@ -18,13 +17,15 @@ func (this *User) List(c *gin.Context) {
 
 	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/user/list", true).ToString()
 
-	c.HTML(http.StatusOK, "admin/user/list", map[string]interface{}{
+	this.display(c, map[string]interface{}{
 		"list"			:		users,
 		"pagebar"		:		pagebar,
 	})
 }
 
 func (this *User) Edit(c *gin.Context) {
+	var gmsg string
+
 	uinfo := map[string]string {
 		"id"			:		"",
 		"username"		:		"",
@@ -33,7 +34,6 @@ func (this *User) Edit(c *gin.Context) {
 	}
 
 	desc := "add"
-	gmsg := make(map[string]string)
 
 	id := c.Query("id")
 	if "" != id {
@@ -83,15 +83,13 @@ func (this *User) Edit(c *gin.Context) {
 			uinfo["email"]		=	params["email"]
 			uinfo["active"]		=	params["active"]
 			uinfo["id"]			=	id
-			gmsg["msg"] 	= 	"success !"
-			gmsg["color"]	=	"success"
+			gmsg				=	MSG_SUCCESS
 		}else{
-			gmsg["msg"] 	= 	"fail, please try again"
-			gmsg["color"]	=	"error"
+			gmsg				=	MSG_ERROR
 		}
 	}
 
-	c.HTML(http.StatusOK, "admin/user/edit", map[string]interface{}{
+	this.display(c, map[string]interface{}{
 		"uinfo"		:		uinfo,
 		"desc"		:		desc,
 		"gmsg"		:		gmsg,

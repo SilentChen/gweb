@@ -12,6 +12,8 @@ import (
 )
 
 const (
+	MSG_SUCCESS				=	"success"
+	MSG_ERROR				=	"error"
 	APISTATUS_OK			=	"0"			//	success
 	APISTATUS_FAIL			=	"1"			//	fail, maybe network, try again
 	APISTATUS_ERR			=	"-1"		//	error, program go wrong
@@ -114,17 +116,17 @@ func (this *Base) Invoke(c *gin.Context) {
 		return
 	}
 
-	first := strings.ToUpper(act[1:2])		//change the second char into upper
-	act = first + act[2:]					//cut the string begin from the third char, first is '/', the second will be replace by it's upper own
+	first  := strings.ToUpper(act[1:2])		//change the second char into upper
+	action := first + act[2:]					//cut the string begin from the third char, first is '/', the second will be replace by it's upper own
 
 	refVal := reflect.ValueOf(controller)
-	method := refVal.MethodByName(act)
+	method := refVal.MethodByName(action)
 	if method.Kind() == reflect.Invalid {
 		this.errorShow(c, []string{"bad act"})
 		return
 	}
 	c.Set("ctl", ctl)
-	c.Set("act", act)
+	c.Set("act", act[1:])
 
 	args := make([]reflect.Value, 1)
 	args[0] = reflect.ValueOf(c)
@@ -143,4 +145,17 @@ func (this *Base) errorShow(c *gin.Context, errMsg []string) {
 	}
 	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
 	return
+}
+
+func (this *Base) display(c *gin.Context, params map[string]interface{}) {
+	template := "admin/"
+	ctl := c.GetString("ctl")
+	act := c.GetString("act")
+	if "" == ctl || "" == act {
+		template += "default"
+	}else{
+		template += ctl + "/" + act
+	}
+
+	c.HTML(http.StatusOK, template, params)
 }

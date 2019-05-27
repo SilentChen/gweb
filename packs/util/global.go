@@ -59,6 +59,7 @@ const (
 	Gmysql_max_open_conns	=	"200"
 	Gmysql_charset			=	"utf8"
 	Gtime_layout			=	"2006-01-02 15:04:05"
+	CacheType				=	"file"					//	file、 memcache、 redis
 )
 
 type WebSetting struct {

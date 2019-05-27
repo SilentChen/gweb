@@ -32,7 +32,7 @@ func (this *Base) List(c *gin.Context) {
 
 	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/article/list", true).ToString()
 
-	c.HTML(http.StatusOK, "admin/article/list", map[string]interface{}{
+	this.display(c, map[string]interface{}{
 		"list"			:		*articles,
 		"pagebar"		:		pagebar,
 		"status"		:		status,
@@ -44,6 +44,7 @@ func (this *Base) List(c *gin.Context) {
 }
 
 func (this *Base) Edit(c *gin.Context) {
+	var gmsg string
 	ainfo := map[string]string{
 		"title"		:		"",
 		"color"		:		"",
@@ -57,7 +58,6 @@ func (this *Base) Edit(c *gin.Context) {
 	}
 
 	desc := "add"
-	gmsg := make(map[string]string)
 	id := c.Query("id")
 
 	if "" != id {
@@ -101,15 +101,13 @@ func (this *Base) Edit(c *gin.Context) {
 
 		if arow > 0 {
 			ainfo = params
-			gmsg["msg"] 	= 	"success !"
-			gmsg["color"]	=	"success"
+			gmsg 	= 	MSG_SUCCESS
 		}else{
-			gmsg["msg"] 	= 	"fail, please try again"
-			gmsg["color"]	=	"error"
+			gmsg	=	MSG_ERROR
 		}
 	}
 
-	c.HTML(http.StatusOK, "admin/article/edit",map[string]interface{}{
+	this.display(c, map[string]interface{}{
 		"post"		:		ainfo,
 		"desc"		:		desc,
 		"gmsg"		:		gmsg,
