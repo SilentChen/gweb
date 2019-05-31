@@ -51,7 +51,9 @@
 				<span class="label label-important">页面</span>
 				{{end}}
 			</td>
-			<td class="hl_tag">{{str2html $v.url_type}}</td>
+			<td class="hl_tag">
+                <a href="javascript:void();" target="_blank">{{$v.tags}}</a>
+            </td>
 			<td>{{$v.views}}</td>
 			<td class="hl_author">{{$v.author}}</td>
 			<td>{{$v.post_time}}</td>
@@ -98,7 +100,7 @@
 						$(this).html($(this).html().replace(re, "<span style='color:red'>"+keyword+"</span>"));
 					});
 					break;
-				case "tag":
+				case "tags":
 					$(".hl_tag").each(function(){
 						$(this).children("a").html($(this).children("a").html().replace(re, "<span style='color:red'>"+keyword+"</span>"));
 					});

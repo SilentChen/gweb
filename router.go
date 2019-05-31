@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 	"web/controllers/admin"
 	"web/controllers/api"
+	"web/controllers/app"
 	"web/packs/gin"
 )
 
@@ -68,6 +69,7 @@ func LoadRouters() *gin.Engine {
 	r.Use(gin.Recovery())
 	gadmin 	:= r.Group("/admin")
 	gapi 	:= r.Group("/api")
+	gapp	:=	r.Group("/")
 
 	// admin use session meddileware to check login status
 	gadmin.Use(func(c *gin.Context) {
@@ -83,14 +85,17 @@ func LoadRouters() *gin.Engine {
 	})
 
 	// some handler init
-	apiTest := new(api.Test)
-	adminBase := new(admin.Base)
+	apiTest 	:= new(api.Test)
+	adminBase 	:= new(admin.Base)
+	appBase		:= new(app.Base)
 
 	// link the route pattern to the handler
 	gapi.GET("/", apiTest.Index)
 
 	gadmin.GNP("/", adminBase.Invoke)
 	gadmin.GNP("/:ctl/*act", adminBase.Invoke)
+
+	gapp.GNP("/", appBase.Invoke)
 
 	profRouter(r)
 	/*articles := new(app.Articles)

@@ -2,6 +2,7 @@ package admin
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"web/packs/gin"
 	"web/packs/util"
@@ -12,7 +13,9 @@ type Article struct {
 }
 
 func (this *Base) List(c *gin.Context) {
-	var querySql string
+	var querySql, countSql string
+	var totalNum string
+
 	searchtype := c.DefaultPostForm("searchtype", "")
 	keyword    := c.DefaultPostForm("keyword", "")
 	status := c.DefaultQuery("status", "0")
@@ -23,17 +26,21 @@ func (this *Base) List(c *gin.Context) {
 	page := util.Str2int(c.DefaultQuery("page", "0"))
 
 	if "" != searchtype && "" != keyword {
-		querySql = fmt.Sprintf("select ? from `post` where status = %s and %s like '%s%%' limit %d,%d", status, searchtype, keyword, this.pageOffset(page), this.pageSize())
+		countSql = fmt.Sprintf("select count(*) from `post` where status = %s and %s like '%s%%'", status, searchtype, keyword)
+		querySql = fmt.Sprintf("select * from `post` where status = %s and %s like '%s%%' limit %d,%d", status, searchtype, keyword, this.pageOffset(page), this.pageSize())
 	}else{
-		querySql = fmt.Sprintf("select ? from `post` where status = %s limit %d,%d", status, this.pageOffset(page), this.pageSize())
+		countSql = fmt.Sprintf("select count(*) from `post` where status = %s", status)
+		querySql = fmt.Sprintf("select * from `post` where status = %s limit %d,%d", status, this.pageOffset(page), this.pageSize())
 	}
 
-	count, articles, _ := this.mysqlInstance().GetAll(querySql, "*")
+	log.Println(countSql)
+	totalNum = this.mysqlInstance().DefGetOne(countSql, "0")
+	_, list, _ := this.mysqlInstance().GetAll(querySql)
 
-	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/article/list", true).ToString()
+	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/admin/article/list", true).ToString()
 
 	this.display(c, map[string]interface{}{
-		"list"			:		*articles,
+		"list"			:		list,
 		"pagebar"		:		pagebar,
 		"status"		:		status,
 		"searchtype"	:		searchtype,

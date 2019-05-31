@@ -12,10 +12,11 @@ type User struct {
 
 func (this *User) List(c *gin.Context) {
 	page := util.Str2int(c.DefaultQuery("page", "0"))
+	totalNum := this.mysqlInstance().DefGetOne("select count(*) from user", "0")
 
-	count, users, _ := this.mysqlInstance().GetAll(fmt.Sprintf("select ? from user limit %d,%d", this.pageOffset(page), this.pageSize()), "*")
+	_, users, _ := this.mysqlInstance().GetAll(fmt.Sprintf("select * from user limit %d,%d", this.pageOffset(page), this.pageSize()))
 
-	pagebar := util.NewPager(page, count, this.pageSize(), "/admin/user/list", true).ToString()
+	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/admin/user/list", true).ToString()
 
 	this.display(c, map[string]interface{}{
 		"list"			:		users,

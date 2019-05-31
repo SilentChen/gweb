@@ -43,7 +43,9 @@ func (this *Base) pageOffset(page int) int {
 		page = 1
 	}
 
-	return (page - 1) * this.pz
+	psize := this.pageSize()
+
+	return (page - 1) * psize
 }
 
 func (this *Base) mysqlInstance() *models.Mysql{

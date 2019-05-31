@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"strings"
+	"log"
 	"sync"
 	_ "web/packs/gin/plugins/mysql"
 	"web/packs/util"
@@ -41,6 +41,7 @@ func init() {
 
 	this.instance.SetMaxIdleConns(db_idel)
 
+
 	this.instance.SetMaxOpenConns(db_open)
 }
 
@@ -48,54 +49,92 @@ func (_ *Mysql) GetInstance() *sql.DB{
 	return this.instance
 }
 
-func (_ *Mysql) GetAll (querySql string, columns string) (int, *[]map[string]string, error) {
-	var total_num int
-	var err error
-	var ret []map[string]string
-
-	err = this.instance.QueryRow(strings.Replace(querySql,"?", "count(*)", 1)).Scan(&total_num)
-
-
-	if(nil != err || total_num < 1) {
-		return total_num,&ret, err
-	}
-
+func (_ *Mysql) GetAll(querySql string) (int, []map[string]string, error) {
 	var rows *sql.Rows
-	rows, err  = this.instance.Query(strings.Replace(querySql, "?", columns, 1))
+	var err error
+	var rnum int
+	var container []map[string]string
+	log.Println(querySql, rnum, container, err)
+	rows, err = this.instance.Query(querySql)
 	defer rows.Close()
 
-	if nil != err {
-		return total_num,&ret, err
+	if nil !=	err {
+		return rnum, container, err
 	}
 
-	var rcol  []string
+	var rcol []string
+
 	rcol, err = rows.Columns()
-	if err != nil {
-		return total_num,&ret, err
+	if nil != err {
+		return rnum, container, err
 	}
-	cnum := len(rcol)
 
-	ret = make([]map[string]string, total_num)
-	scaner := make([]interface{}, cnum)
-	values := make([]interface{}, cnum)
-	for j := range values {
-		scaner[j] = &values[j]
+	cnum := len(rcol)
+	scaner	:=	make([]interface{}, cnum)
+	value	:=	make([]interface{}, cnum)
+	for j := range value {
+		scaner[j] = &value[j]
 	}
 
 	index := 0
 	for rows.Next() {
 		err = rows.Scan(scaner...)
-		ret[index] = make(map[string]string)
-		for i, col := range values {
-			if nil != col {
-				ret[index][rcol[i]] = string(col.([]byte))
-			}
+		container = append(container, make(map[string]string))
+		for i, col := range value {
+			rnum += 1
+			container[index][rcol[i]] = string(col.([]byte))
 		}
-		index += 1
+		index ++
 	}
 
-	return total_num,&ret, nil
+	return	rnum, container, nil
 }
+
+/**
+	@param	IN	querySql string
+	@param	OUT	container	*[]map[string]string
+			notice:	container must start at index 0
+	@return row num int
+	@return	err	error
+ */
+//	func (_ *Mysql) GetAll(querySql string, container *[]map[string]string) (int, error) {
+//		var rows *sql.Rows
+//		var err error
+//		var rnum int
+//
+//		rows, err = this.instance.Query(querySql)
+//		defer rows.Close()
+//
+//		if nil !=	err {
+//			return rnum, err
+//		}
+//
+//		var rcol []string
+//		rcol, err = rows.Columns()
+//		if nil != err {
+//			return rnum, err
+//		}
+//
+//		cnum := len(rcol)
+//		scaner	:=	make([]interface{}, cnum)
+//		value	:=	make([]interface{}, cnum)
+//		for j := range value {
+//			scaner[j] = &value[j]
+//		}
+//
+//		index := 0
+//		for rows.Next() {
+//			err = rows.Scan(scaner...)
+//			*container = append(*container, make(map[string]string))
+//			for i, col := range value {
+//				rnum += 1
+//				(*container)[index][rcol[i]] = string(col.([]byte))
+//			}
+//			index ++
+//		}
+//
+//		return	rnum, nil
+//	}
 
 func (_ *Mysql) GetRow(querySql string) (*map[string]string, error) {
 	ret := make(map[string]string)
