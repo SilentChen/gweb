@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"log"
 	"sync"
 	_ "web/packs/gin/plugins/mysql"
 	"web/packs/util"
@@ -54,7 +53,7 @@ func (_ *Mysql) GetAll(querySql string) (int, []map[string]string, error) {
 	var err error
 	var rnum int
 	var container []map[string]string
-	log.Println(querySql, rnum, container, err)
+
 	rows, err = this.instance.Query(querySql)
 	defer rows.Close()
 

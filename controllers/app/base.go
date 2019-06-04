@@ -146,7 +146,7 @@ func (this *Base) errorShow(c *gin.Context, errMsg []string) {
 }
 
 func (this *Base) display(c *gin.Context, params map[string]interface{}) {
-	template := "admin/"
+	template := "app/"
 	ctl := c.GetString("ctl")
 	act := c.GetString("act")
 	if "" == ctl || "" == act {

@@ -1,5 +1,5 @@
 {{define "admin/article/list"}}
-{{template "admin/header"}}
+{{template "admin/layout/header"}}
 <fieldset>
 	<legend>文章列表</legend>
 
@@ -135,5 +135,5 @@
 		ReqAndShowAuto("/admin/article/bupdate", {opt:opt, ops:ops.join(",")}, "json")
 	}
 </script>
-{{template "admin/footer"}}
+{{template "admin/layout/footer"}}
 {{end}}

@@ -1,0 +1,26 @@
+{{define "app/index/index"}}
+{{template "app/layout/header"}}
+<div itemscope itemtype="http://schema.org/Blog">
+	{{range $k, $v := .list}}
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="{{$v.post_time}}" data-updated="true" itemprop="datePublished">{{$v.post_time}}<span>th</span>, {{$v.post_time}}</time>
+			</div>
+			<div class="tags"></div>
+		</div>
+		<h1 class="title" itemprop="name">
+			<a href="{{$v.Link}}" itemprop="url"></a>
+		</h1>
+		<div class="entry-content" itemprop="articleBody">
+
+		</div>
+	</article>
+
+	{{end}}
+</div>
+
+<nav id="pagenavi">
+	{{str2html .pagebar}}
+</nav>
+{{end}}

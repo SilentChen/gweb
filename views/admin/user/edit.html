@@ -1,5 +1,5 @@
 {{define "admin/user/edit"}}
-{{template "admin/header" .}}
+{{template "admin/layout/header" .}}
 <fieldset>
 	<legend>
 	{{if eq .desc "add"}}
@@ -51,5 +51,5 @@
 	</form>
 
 </fieldset>
-{{template "admin/footer"}}
+{{template "admin/layout/footer"}}
 {{end}}
