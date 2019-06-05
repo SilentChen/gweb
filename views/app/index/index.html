@@ -1,5 +1,5 @@
 {{define "app/index/index"}}
-{{template "app/layout/header"}}
+{{template "app/layout/header" .}}
 <div itemscope itemtype="http://schema.org/Blog">
 	{{range $k, $v := .list}}
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -7,16 +7,15 @@
 			<div class="date">
 				<time datetime="{{$v.post_time}}" data-updated="true" itemprop="datePublished">{{$v.post_time}}<span>th</span>, {{$v.post_time}}</time>
 			</div>
-			<div class="tags"></div>
+			<div class="tags">{{str2html $v.url_name}}</div>
 		</div>
 		<h1 class="title" itemprop="name">
-			<a href="{{$v.Link}}" itemprop="url"></a>
+			<a href="{{$v.url_name}}" itemprop="url">{{str2html $v.color}}</a>
 		</h1>
 		<div class="entry-content" itemprop="articleBody">
-
+			{{str2html $v.content}}
 		</div>
 	</article>
-
 	{{end}}
 </div>
 

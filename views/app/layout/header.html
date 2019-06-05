@@ -39,7 +39,7 @@
 					</ul>
 					<ul class="main-navigation">
 						{{range $k, $v := .tagList}}
-						<li><a href="/category/{{str2html $v.Name}}">{{str2html $v.Name}}</a></li>
+						<li><a href="/category/{{$v.tags}}">{{$v.tags}}</a></li>
 						{{end}}
 					</ul>
 				</nav>
@@ -68,8 +68,8 @@
 		<!-- /mid-col-container -->
 
 		<footer id="footer" class="inner">
-			<p>Copyright &copy; 2013-2014 - <a href="{{.options.siteurl}}" title="{{.options.sitename}}">{{.options.sitename}}</a> - <span class="credit">Powered by <a href="https://github/SillentChen">GoBlog</a></span></p>
-			Design credit: <a href="https://github/SientChen">Shashank Mehta</a>
+			<p>Copyright &copy; 2018-2019 - <a href="{{.options.siteurl}}" title="{{.options.sitename}}">{{.options.sitename}}</a> - <span class="credit">Powered by <a href="https://github/SillentChen">SilentChen</a></span></p>
+			Design credit: <a href="https://github/SientChen">MIT LISCENCE</a>
 		</footer>
 		<script src="/static/themes/default/js/slash.js"></script>
 	</div>
@@ -77,7 +77,7 @@
 </div>
 <!-- /container -->
 <div style="display:none">
-	{{str2html .options.stat}}
+	{{.options.stat}}
 </div>
 </body>
 </html>

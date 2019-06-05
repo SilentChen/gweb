@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"web/packs/gin"
 	"web/packs/util"
 )
@@ -19,8 +20,19 @@ func (this *Base) Index(c *gin.Context) {
 
 	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/", true).ToString()
 
+	_, tags,_ := this.mysqlInstance().GetAll("select distinct tags from `post`")
+
+	options := map[string]string{
+		"sitename"		:		util.Gwebsetting.Get("webTitle"),
+		"subtitle"		:		util.Gwebsetting.Get("webSubTitle"),
+		"siteurl"		:		util.Gwebsetting.Get("webUrl"),
+		"stat"			:		util.Gwebsetting.Get("webEmail"),
+	}
+	log.Println(list)
 	this.display(c, map[string]interface{}{
 		"pagebar"		:		pagebar,
 		"list"			:		list,
+		"options"		:		options,
+		"tagList"		:		tags,
 	})
 }
