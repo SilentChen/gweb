@@ -129,8 +129,12 @@ func Date2unix(date string) int64 {
 	return tmp.Unix()
 }
 
-func Unix2date(utime int64) string {
+func Unix2time(utime int64) string {
 	return time.Unix(utime, 0).Format(Gtime_layout)
+}
+
+func Unix2date(utime int64) string {
+	return time.Unix(utime, 0).Format(Gdate_laout)
 }
 
 func Str2byte(str string) []byte {

@@ -5,12 +5,12 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
-				<time datetime="{{$v.post_time}}" data-updated="true" itemprop="datePublished">{{$v.post_time}}<span>th</span>, {{$v.post_time}}</time>
+				<time datetime="{{$v.post_time}}" data-updated="true" itemprop="datePublished">{{date2unix $v.post_time|unix2date}}<span>th</span></time>
 			</div>
-			<div class="tags">{{str2html $v.url_name}}</div>
+			<div class="tags">{{str2html $v.tags}}</div>
 		</div>
 		<h1 class="title" itemprop="name">
-			<a href="{{$v.url_name}}" itemprop="url">{{str2html $v.color}}</a>
+			<a href="{{$v.url_name}}" itemprop="url">{{str2html $v.title}}</a>
 		</h1>
 		<div class="entry-content" itemprop="articleBody">
 			{{str2html $v.content}}

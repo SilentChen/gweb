@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -42,8 +43,9 @@ func (this *Base) pageOffset(page int) int {
 	if page < 1 {
 		page = 1
 	}
+	log.Println("pz is:",  this.pz)
 
-	return (page - 1) * this.pz
+	return (page - 1) * this.pageSize()
 }
 
 func (this *Base) mysqlInstance() *models.Mysql{

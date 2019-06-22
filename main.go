@@ -51,6 +51,9 @@ func main() {
 		"echo"		:	fmt.Sprintf,
 		"date"		:	util.DateFormat,
 		"str2html"	:	util.Str2html,
+		"unix2time"	:	util.Unix2time,
+		"unix2date"	:	util.Unix2date,
+		"date2unix"	:	util.Date2unix,
 	})
 
 	r.LoadHTMLGlob("views/**/**/*")
