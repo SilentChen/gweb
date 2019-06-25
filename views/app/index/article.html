@@ -1,8 +1,10 @@
+{{define "app/index/article"}}
+{{template "app/layout/header" .}}
 <div itemscope itemtype="http://schema.org/Blog">
 <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-	<h1 class="title" itemprop="name">{{.post.Title}}</h1>
+	<h1 class="title" itemprop="name">{{.title}}</h1>
 	<div class="entry-content" itemprop="articleBody">
-	{{str2html .post.Content}}
+	{{str2html .content}}
 	</div>
 </article>
 </div>
@@ -11,3 +13,4 @@
     <!--高速版，加载速度快，使用前需测试页面的兼容性-->
 	<div id="SOHUCS"></div>
 </section>
+{{end}}

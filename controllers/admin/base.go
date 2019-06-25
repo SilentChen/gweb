@@ -145,7 +145,7 @@ func (this *Base) errorShow(c *gin.Context, errMsg []string) {
 	if "" == msg {
 		msg = "Oh God ! Something Went Wrong !"
 	}
-	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
+	c.HTML(http.StatusForbidden, "admin/layout/default", map[string]interface{}{"msg":msg})
 	return
 }
 
@@ -154,7 +154,7 @@ func (this *Base) display(c *gin.Context, params map[string]interface{}) {
 	ctl := c.GetString("ctl")
 	act := c.GetString("act")
 	if "" == ctl || "" == act {
-		template += "default"
+		template += "layout/default"
 	}else{
 		template += ctl + "/" + act
 	}

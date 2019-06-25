@@ -10,7 +10,7 @@
 			<div class="tags">{{str2html $v.tags}}</div>
 		</div>
 		<h1 class="title" itemprop="name">
-			<a href="{{$v.url_name}}" itemprop="url">{{str2html $v.title}}</a>
+			<a href="/act/article?aid={{$v.id}}" itemprop="url">{{str2html $v.title}}1</a>
 		</h1>
 		<div class="entry-content" itemprop="articleBody">
 			{{str2html $v.content}}

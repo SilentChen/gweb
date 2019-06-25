@@ -69,7 +69,7 @@ func LoadRouters() *gin.Engine {
 	r.Use(gin.Recovery())
 	gadmin 	:= r.Group("/admin")
 	gapi 	:= r.Group("/api")
-	gapp	:=	r.Group("/")
+	gapp	:= r.Group("/")
 
 	// admin use session meddileware to check login status
 	gadmin.Use(func(c *gin.Context) {
@@ -96,6 +96,8 @@ func LoadRouters() *gin.Engine {
 	gadmin.GNP("/:ctl/*act", adminBase.Invoke)
 
 	gapp.GNP("/", appBase.Invoke)
+	gapp.GNP("/act/:act", appBase.Invoke)
+	gapp.GNP("/ctl/:ctl/act/:act", appBase.Invoke)
 
 	profRouter(r)
 	/*articles := new(app.Articles)

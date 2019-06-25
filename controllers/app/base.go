@@ -3,7 +3,6 @@ package app
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -43,7 +42,6 @@ func (this *Base) pageOffset(page int) int {
 	if page < 1 {
 		page = 1
 	}
-	log.Println("pz is:",  this.pz)
 
 	return (page - 1) * this.pageSize()
 }
@@ -104,9 +102,8 @@ func (this *Base) Invoke(c *gin.Context) {
 
 	if "" == act && "" == ctl {
 		ctl = "index"
-		act = "/index"
-	}else if "/" == act && "" != ctl {
-		act = "/" + ctl
+		act = "index"
+	}else if "" == ctl && "" != act {
 		ctl = "index"
 	}
 
@@ -116,9 +113,8 @@ func (this *Base) Invoke(c *gin.Context) {
 		return
 	}
 
-	first  := strings.ToUpper(act[1:2])		//change the second char into upper
-	action := first + act[2:]					//cut the string begin from the third char, first is '/', the second will be replace by it's upper own
-
+	first  := strings.ToUpper(act[0:1])
+	action := first + act[1:]
 	refVal := reflect.ValueOf(controller)
 	method := refVal.MethodByName(action)
 	if method.Kind() == reflect.Invalid {
@@ -126,7 +122,7 @@ func (this *Base) Invoke(c *gin.Context) {
 		return
 	}
 	c.Set("ctl", ctl)
-	c.Set("act", act[1:])
+	c.Set("act", act)
 
 	args := make([]reflect.Value, 1)
 	args[0] = reflect.ValueOf(c)
@@ -143,7 +139,7 @@ func (this *Base) errorShow(c *gin.Context, errMsg []string) {
 	if "" == msg {
 		msg = "Oh God ! Something Went Wrong !"
 	}
-	c.HTML(http.StatusForbidden, "admin/default", map[string]interface{}{"msg":msg})
+	c.HTML(http.StatusForbidden, "app/layout/default", map[string]interface{}{"msg":msg})
 	return
 }
 
@@ -152,7 +148,7 @@ func (this *Base) display(c *gin.Context, params map[string]interface{}) {
 	ctl := c.GetString("ctl")
 	act := c.GetString("act")
 	if "" == ctl || "" == act {
-		template += "default"
+		template += "layout/default"
 	}else{
 		template += ctl + "/" + act
 	}
