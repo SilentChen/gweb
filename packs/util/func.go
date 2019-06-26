@@ -134,7 +134,11 @@ func Unix2time(utime int64) string {
 }
 
 func Unix2date(utime int64) string {
-	return time.Unix(utime, 0).Format(Gdate_laout)
+	return time.Unix(utime, 0).Format(Gdate_layout)
+}
+
+func Unix2year(utine int64) string {
+	return time.Unix(utine, 0).Format(Gyear_layout)
 }
 
 func Str2byte(str string) []byte {

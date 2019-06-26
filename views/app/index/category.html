@@ -1,3 +1,5 @@
+{{define "app/index/category"}}
+{{template "app/layout/header" .}}
 <div itemscope itemtype="http://schema.org/Blog">
 
 {{range $year, $list := .result}}
@@ -24,3 +26,4 @@
 <nav id="pagenavi">
 	<div class="center">{{str2html .pagebar}}</div>
 </nav>
+{{end}}

@@ -19,20 +19,12 @@ func (this *Base) Index(c *gin.Context) {
 
 	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/", true).ToString()
 
-	_, tags,_ := this.mysqlInstance().GetAll("select distinct tags from `post`")
-
-	options := map[string]string{
-		"sitename"		:		util.Gwebsetting.Get("webTitle"),
-		"subtitle"		:		util.Gwebsetting.Get("webSubTitle"),
-		"siteurl"		:		util.Gwebsetting.Get("webUrl"),
-		"stat"			:		util.Gwebsetting.Get("webEmail"),
-	}
+	base :=	getBaseData()
 
 	this.display(c, map[string]interface{}{
 		"pagebar"		:		pagebar,
 		"list"			:		list,
-		"options"		:		options,
-		"tagList"		:		tags,
+		"base"			:		base,
 	})
 }
 
@@ -59,15 +51,51 @@ func (this *Base) Article(c *gin.Context) {
 }
 
 func (this *Base) Category(c *gin.Context) {
-	var list map[string]string
-	tag := c.DefaultQuery("tag", "-1")
-	if -1 != tag {
-		totalNum, _ := this.mysqlInstance().GetOne(fmt.Sprintf("select count(*) from `post` where tags = '%s'", tag))
-		page := util.Str2int(c.DefaultQuery())
-		_, list, _ := this.mysqlInstance(fmt.Sprintf("select title,post_time from `post` where tags = '%s'", tag))
+	var list []map[string]string
+	var pagelist map[string][]map[string]string
+	var where string
+	totalNum := "0"
+
+	page := util.Str2int(c.DefaultQuery("page", "0"))
+	tag := c.DefaultQuery("tag", "default")
+
+	if "default" != tag {
+		where = fmt.Sprintf(" where tags = '%s' ", tag)
 	}
+
+	totalNum, _ = this.mysqlInstance().GetOne(fmt.Sprintf("select count(*) from `post` %s", where))
+	_, list, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select title,post_time from `post` %s limit %d,%d", where, this.pageOffset(page), this.pageSize()))
+
+	if len(list) > 0 {
+		var year = ""
+		for _, row := range list  {
+			year = util.Unix2year(util.Date2unix(row["post_time"]))
+			pagelist[year] = append(pagelist[year], row)
+		}
+	}
+
+	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/act/category?tag=" + tag, true).ToString()
+	base :=	getBaseData()
 
 	this.display(c, map[string]interface{}{
 		"list"		:		list,
+		"pagebar"	:		pagebar,
+		"base"		:		base,
 	})
+}
+
+func getBaseData() map[string]interface{} {
+	_, tags,_ := this.mysqlInstance().GetAll("select distinct tags from `post`")
+
+	options := map[string]string{
+		"sitename"		:		util.Gwebsetting.Get("webTitle"),
+		"subtitle"		:		util.Gwebsetting.Get("webSubTitle"),
+		"siteurl"		:		util.Gwebsetting.Get("webUrl"),
+		"stat"			:		util.Gwebsetting.Get("webEmail"),
+	}
+
+	return map[string]interface{} {
+		"taglist"	:		tags,
+		"options"	:		options,
+	}
 }
