@@ -66,7 +66,7 @@ func (this *Base) Category(c *gin.Context) {
 	tag := c.DefaultQuery("tag", "default")
 
 	if "default" != tag {
-		where = fmt.Sprintf(" and tags = '%s' ", tag)
+		where += fmt.Sprintf(" and tags = '%s' ", tag)
 	}
 
 	_, tmplist, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select id,title,post_time,tags from `post` %s order by post_time desc", where))
