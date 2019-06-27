@@ -68,7 +68,7 @@ func (this *Base) Category(c *gin.Context) {
 		where = fmt.Sprintf(" where tags = '%s' ", tag)
 	}
 
-	_, tmplist, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select id,title,post_time,tags from `post` %s", where))
+	_, tmplist, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select id,title,post_time,tags from `post` %s order by post_time desc", where))
 
 	if len(tmplist) > 0 {
 		list = make(map[string][]map[string]string)
