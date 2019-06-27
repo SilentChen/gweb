@@ -2,7 +2,6 @@ package admin
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"web/packs/gin"
 	"web/packs/util"
@@ -33,7 +32,6 @@ func (this *Base) List(c *gin.Context) {
 		querySql = fmt.Sprintf("select * from `post` where status = %s limit %d,%d", status, this.pageOffset(page), this.pageSize())
 	}
 
-	log.Println(countSql)
 	totalNum = this.mysqlInstance().DefGetOne(countSql, "0")
 	_, list, _ := this.mysqlInstance().GetAll(querySql)
 

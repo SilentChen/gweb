@@ -46,7 +46,7 @@
 				{{if eq $v.is_top "1"}}
 				<i class="icon-arrow-up" title="置顶"> </i>
 				{{end}}
-				<a href="{{$v.url_name}}" target="_blank">{{$v.title}}</a>
+				<a href="/act/article?aid={{$v.id}}" target="_blank">{{$v.title}}</a>
 				{{if $v.url_type}}
 				<span class="label label-important">页面</span>
 				{{end}}

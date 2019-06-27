@@ -11,11 +11,11 @@ type Index struct {
 }
 
 func (this *Base) Index(c *gin.Context) {
-	totalNum :=	this.mysqlInstance().DefGetOne("select count(*) from `post`", "0")
+	totalNum :=	this.mysqlInstance().DefGetOne("select count(*) from `post` where status = 0", "0")
 
 	page := util.Str2int(c.DefaultQuery("page", "0"))
 
-	_, list, _ := this.mysqlInstance().GetAll(fmt.Sprintf("select * from `post` limit %d,%d", this.pageOffset(page), this.pageSize()))
+	_, list, _ := this.mysqlInstance().GetAll(fmt.Sprintf("select * from `post` where status = 0 limit %d,%d", this.pageOffset(page), this.pageSize()))
 
 	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/", true).ToString()
 
@@ -62,10 +62,11 @@ func (this *Base) Category(c *gin.Context) {
 		tmp string
 	)
 
+	where = " where status = 0 "
 	tag := c.DefaultQuery("tag", "default")
 
 	if "default" != tag {
-		where = fmt.Sprintf(" where tags = '%s' ", tag)
+		where = fmt.Sprintf(" and tags = '%s' ", tag)
 	}
 
 	_, tmplist, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select id,title,post_time,tags from `post` %s order by post_time desc", where))
@@ -87,7 +88,7 @@ func (this *Base) Category(c *gin.Context) {
 }
 
 func getBaseData() map[string]interface{} {
-	_, tags,_ := this.mysqlInstance().GetAll("select distinct tags from `post`")
+	_, tags,_ := this.mysqlInstance().GetAll("select distinct tags from `post` where status = 0")
 
 	options := map[string]string{
 		"sitename"		:		util.Gwebsetting.Get("webTitle"),
