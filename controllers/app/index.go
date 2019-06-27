@@ -44,42 +44,44 @@ func (this *Base) Article(c *gin.Context) {
 		return
 	}
 
+	base :=	getBaseData()
+
 	this.display(c, map[string]interface{}{
 		"title"		:		title,
 		"content"	:		content,
+		"base"		:		base,
 	})
 }
 
 func (this *Base) Category(c *gin.Context) {
-	var list []map[string]string
-	var pagelist map[string][]map[string]string
-	var where string
-	totalNum := "0"
 
-	page := util.Str2int(c.DefaultQuery("page", "0"))
+	var(
+		list map[string][]map[string]string
+		tmplist []map[string]string
+		where string
+		tmp string
+	)
+
 	tag := c.DefaultQuery("tag", "default")
 
 	if "default" != tag {
 		where = fmt.Sprintf(" where tags = '%s' ", tag)
 	}
 
-	totalNum, _ = this.mysqlInstance().GetOne(fmt.Sprintf("select count(*) from `post` %s", where))
-	_, list, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select title,post_time from `post` %s limit %d,%d", where, this.pageOffset(page), this.pageSize()))
+	_, tmplist, _  = this.mysqlInstance().GetAll(fmt.Sprintf("select id,title,post_time,tags from `post` %s", where))
 
-	if len(list) > 0 {
-		var year = ""
-		for _, row := range list  {
-			year = util.Unix2year(util.Date2unix(row["post_time"]))
-			pagelist[year] = append(pagelist[year], row)
+	if len(tmplist) > 0 {
+		list = make(map[string][]map[string]string)
+		for _, row := range tmplist  {
+			tmp = util.Unix2year(util.Date2unix(row["post_time"]))
+			list[tmp] = append(list[tmp], row)
 		}
 	}
 
-	pagebar := util.NewPager(page, util.Str2int(totalNum), this.pageSize(), "/act/category?tag=" + tag, true).ToString()
 	base :=	getBaseData()
 
 	this.display(c, map[string]interface{}{
 		"list"		:		list,
-		"pagebar"	:		pagebar,
 		"base"		:		base,
 	})
 }

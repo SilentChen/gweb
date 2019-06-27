@@ -59,7 +59,7 @@ const (
 	Gmysql_max_open_conns	=	"200"
 	Gmysql_charset			=	"utf8"
 	Gtime_layout			=	"2006-01-02 15:04:05"
-	Gdate_layout				=	"2006-01-02"
+	Gdate_layout			=	"2006-01-02"
 	Gyear_layout			=	"2006"
 	CacheType				=	"file"					//	file、 memcache、 redis
 )
@@ -85,7 +85,7 @@ func init() {
 	Gwebsetting.webUrl 		= 	"http://127.0.0.1:8080"
 	Gwebsetting.webSubTitle = 	"PersionalBlog"
 	Gwebsetting.webEmail	=	"silent@go.com"
-	Gwebsetting.webPageSize	=	2
+	Gwebsetting.webPageSize	=	10
 	Gwebsetting.webKeyWord	=	"Silent, SilentBlog"
 	Gwebsetting.webDesc		=	"SilentChenPersionalBlog"
 	Gwebsetting.webTheme	=	"default"
